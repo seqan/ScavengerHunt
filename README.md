@@ -1,28 +1,29 @@
 # Scavanger Hunt
 
-
 ## Goals
-1. Wie komme ich auf den Server? (Frontal)
+1. Wie komme ich auf den Server? (Frontal)[30min]<Simon>
     + connection to FU-Servers (how the fu world is setup)
     + ssh
     + scp
     + including ssh-keygen/ssh-copy-id
     + .ssh/config -> proxyjump
 
-2. Was kann ein Server, Wie finde mich zurecht? (Frontal)
+2. Was kann ein Server, Wie finde mich zurecht? (Frontal)[30min]<Simon>
     + htop
     + whoami
     + uname -a
     + tmux,screen,nohup
     + Important shortcuts:
+        - Tab-Completion
         - Ctrl-Shift-V/Ctrl-Shift-C
         - Middle mouse button
-        - Ctrl-C - terminates the current program
+        - Ctrl-C - terminates the current program (yes)
         - Ctrl-D - sends end of file signal
+        - Ctrl-R - Reverse history search
         - Ctrl-L - Clear terminal
         - bash: Ctrl-Q (Ctrl-S freezes the screen)
 
-3. Scavanger Hunt (Interactive)
+3. Scavanger Hunt (Interactive)[60min]<Svenja>
     - Navigation auf dem Server?
         + cd
         + ls -la
@@ -33,9 +34,10 @@
         + touch,rm
         + chmod, chown (?)
     - Viewing and Editing Files
-        + cat
-        + less,more
+        + cat, zcat
+        + less, zless, more
     - Data Manipulation
+        + echo
         + diff
         + head
         + tail
@@ -43,12 +45,29 @@
         + tr
         + sed
         + awk
-        + grep
+        + grep,zgrep
         + find
         + ack
+        + sort
+        + uniq
+        + wc
+        + yes
+        + column -t
+        + rev
+        + tac
     - Data Download
         + wget,curl
+        + git clone
 
-4. Tools (Frontal)
-    + git
+4. Tools (Frontal)[30min]
     + vim,nano,emacs
+    + zsh
+    + cd -
+    + fzf,autojump,autojump-nachfolger
+    + conda,python-env
+    + sudo,su
+    + jq,yq,xq,tq
+    + tar,gzip,zip,xz,zstd
+    + jobs,fg,bg, Ctrl-Z
+    + df,du,quota
+    + parallel,xargs
