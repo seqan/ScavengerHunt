@@ -1,41 +1,13 @@
 #!/bin/bash
-set -euox pipefail
+set -euo pipefail
 
 PATH_LEVEL_0="start"
-PATH_LEVEL_1="start/level1"
-PATH_LEVEL_2="start/level1/level2"
-PATH_LEVEL_3="start/level1/level2/level3"
-PATH_LEVEL_4="start/level1/level2/level3/level4"
-PATH_LEVEL_5="start/level1/level2/level3/level4/level5"
-PATH_LEVEL_6="start/level1/level2/level3/level4/level5/level6"
-PATH_LEVEL_7="start/level1/level2/level3/level4/level5/level6/level7"
-PATH_LEVEL_8="start/level1/level2/level3/level4/level5/level6/level7/level8"
-PATH_LEVEL_9="start/level1/level2/level3/level4/level5/level6/level7/level8/level9"
-PATH_LEVEL_10="start/level1/level2/level3/level4/level5/level6/level7/level8/level9/level10"
-PATH_LEVEL_11="start/level1/level2/level3/level4/level5/level6/level7/level8/level9/level10/level11"
-PATH_LEVEL_12="start/level1/level2/level3/level4/level5/level6/level7/level8/level9/level10/level11/level12"
-PATH_LEVEL_13="start/level1/level2/level3/level4/level5/level6/level7/level8/level9/level10/level11/level12/level13"
-PATH_LEVEL_14="start/level1/level2/level3/level4/level5/level6/level7/level8/level9/level10/level11/level12/level13/level14"
-PATH_LEVEL_15="start/level1/level2/level3/level4/level5/level6/level7/level8/level9/level10/level11/level12/level13/level14/level15"
-PATH_END_BOSS="start/level1/level2/level3/level4/level5/level6/level7/level8/level9/level10/level11/level12/level13/level14/level15/end_boss"
+for i in $(seq 1 1 15); do
+    eval "PATH_LEVEL_${i}=\${PATH_LEVEL_$((i-1))}/level${i}";
+done
+PATH_END_BOSS="${PATH_LEVEL_15}/end_boss"
 
-mkdir ${PATH_LEVEL_0}
-mkdir ${PATH_LEVEL_1}
-mkdir ${PATH_LEVEL_2}
-mkdir ${PATH_LEVEL_3}
-mkdir ${PATH_LEVEL_4}
-mkdir ${PATH_LEVEL_5}
-mkdir ${PATH_LEVEL_6}
-mkdir ${PATH_LEVEL_7}
-mkdir ${PATH_LEVEL_8}
-mkdir ${PATH_LEVEL_9}
-mkdir ${PATH_LEVEL_10}
-mkdir ${PATH_LEVEL_11}
-mkdir ${PATH_LEVEL_12}
-mkdir ${PATH_LEVEL_13}
-mkdir ${PATH_LEVEL_14}
-mkdir ${PATH_LEVEL_15}
-mkdir ${PATH_END_BOSS}
+mkdir -p ${PATH_END_BOSS}
 
 # level 1
 PASSWORD1=kittycat
@@ -119,7 +91,7 @@ echo "zcat, zless, gzip, gunzip" >> ${PATH_LEVEL_7}/README.txt
 # Level 9
 cp ${PATH_LEVEL_4}/password.txt ${PATH_LEVEL_8}/password.txt
 WORD="turpis"
-echo "On how many lines does the word '${WORD}' appear in the file passowrd.txt? The number is the passowrd." > ${PATH_LEVEL_8}/README.txt
+echo "On how many lines does the word '${WORD}' appear in the file password.txt? The number is the password." > ${PATH_LEVEL_8}/README.txt
 echo "" >> ${PATH_LEVEL_8}/README.txt
 echo "Hint: You can solve this only by using unix tools (or their combination) that you have already used in prior levels." >> ${PATH_LEVEL_8}/README.txt
 PASSWORD9=$(grep ${WORD} ${PATH_LEVEL_8}/password.txt | wc -l)
@@ -164,7 +136,7 @@ echo "BB" >> ${PATH_LEVEL_10}/README.txt
 echo "cc" >> ${PATH_LEVEL_10}/README.txt
 echo "AA" >> ${PATH_LEVEL_10}/README.txt
 echo "" >> ${PATH_LEVEL_10}/README.txt
-echo "The word cc appears only one but AA and BB appear multiple times. Here, "cc" would be the password." >> ${PATH_LEVEL_10}/README.txt
+echo "The word cc appears only once but AA and BB appear multiple times. Here, "cc" would be the password." >> ${PATH_LEVEL_10}/README.txt
 echo "" >> ${PATH_LEVEL_10}/README.txt
 echo "You may use one, some or all of these tools:" >> ${PATH_LEVEL_10}/README.txt
 echo "" >> ${PATH_LEVEL_10}/README.txt
@@ -185,7 +157,7 @@ echo "diff" >> ${PATH_LEVEL_11}/README.txt
 echo "sxsbhjlasbdghaslexsbhjlasbdghaslaxsbhjlasbdghaslrxsbhjlasbdghaslcxsbhjlasbdghaslhxsbhjlasbdghasl" >> ${PATH_LEVEL_12}/password.txt
 echo "axsbhjlasbdghaslnxsbhjlasbdghasldxsbhjlasbdghasl" >> ${PATH_LEVEL_12}/password.txt
 echo "rxsbhjlasbdghaslexsbhjlasbdghaslpxsbhjlasbdghasllxsbhjlasbdghaslaxsbhjlasbdghaslcxsbhjlasbdghaslexsbhjlasbdghasl" >> ${PATH_LEVEL_12}/password.txt
-echo "The password can be found in the file password.txt on the 3rd line by replacing the string 'xsbhjlasbdghasl' everywhere with nothing (e.g. removing it)." > ${PATH_LEVEL_12}/README.txt
+echo "The password can be found in the file password.txt on the 3rd line by replacing the string 'xsbhjlasbdghasl' everywhere with nothing (i.e. removing it)." > ${PATH_LEVEL_12}/README.txt
 echo "" >> ${PATH_LEVEL_12}/README.txt
 echo "You may use one, some or all of these tools:" >> ${PATH_LEVEL_12}/README.txt
 echo "" >> ${PATH_LEVEL_12}/README.txt
@@ -232,54 +204,16 @@ PASSWORD0="go"
 
 # Now zip everything
 cd ${PATH_LEVEL_15}
-zip --encrypt --password ${PASSWORD_END_BOSS} -r end_boss.zip end_boss
+zip --quiet --encrypt --password ${PASSWORD_END_BOSS} -r end_boss.zip end_boss
 rm -r end_boss
 cd ../
-zip --encrypt --password ${PASSWORD15} -r level15.zip level15
-rm -r level15
-cd ../
-zip --encrypt --password ${PASSWORD14} -r level14.zip level14
-rm -r level14
-cd ../
-zip --encrypt --password ${PASSWORD13} -r level13.zip level13
-rm -r level13
-cd ../
-zip --encrypt --password ${PASSWORD12} -r level12.zip level12
-rm -r level12
-cd ../
-zip --encrypt --password ${PASSWORD11} -r level11.zip level11
-rm -r level11
-cd ../
-zip --encrypt --password ${PASSWORD10} -r level10.zip level10
-rm -r level10
-cd ../
-zip --encrypt --password ${PASSWORD9} -r level9.zip level9
-rm -r level9
-cd ../
-zip --encrypt --password ${PASSWORD8} -r level8.zip level8
-rm -r level8
-cd ../
-zip --encrypt --password ${PASSWORD7} -r level7.zip level7
-rm -r level7
-cd ../
-zip --encrypt --password ${PASSWORD6} -r level6.zip level6
-rm -r level6
-cd ../
-zip --encrypt --password ${PASSWORD5} -r level5.zip level5
-rm -r level5
-cd ../
-zip --encrypt --password ${PASSWORD4} -r level4.zip level4
-rm -r level4
-cd ../
-zip --encrypt --password ${PASSWORD3} -r level3.zip level3
-rm -r level3
-cd ../
-zip --encrypt --password ${PASSWORD2} -r level2.zip level2
-rm -r level2
-cd ../
-zip --encrypt --password ${PASSWORD1} -r level1.zip level1
-rm -r level1
-cd ../
-zip --encrypt --password ${PASSWORD0} -r start.zip start
+
+for i in $(seq 15 -1 1); do
+    eval zip --quiet --encrypt --password \${PASSWORD${i}} -r level${i}.zip level${i}
+    rm -r level${i}
+    cd ..
+done
+
+zip --quiet --encrypt --password ${PASSWORD0} -r start.zip start
 rm -r start
 
