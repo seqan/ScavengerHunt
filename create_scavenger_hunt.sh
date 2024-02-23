@@ -38,20 +38,7 @@ echo "less, head, tail" >> ${PATH_LEVEL_3}/README.txt
 
 # Level 5
 PASSWORD5="needle"
-retry_command ()
-{
-    for i in 1 2 3 4 5; do
-        if [[ $i -eq 5 ]]; then
-            "$@"
-        else
-            "$@" && break || sleep $((i * 5))
-        fi
-    done
-}
-# The jq will reformat the json a bit, but its main purpose is to check that curl returned valid json (no server error).
-retry_command curl -s -X POST https://lipsum.com/feed/json -d "amount=3000" | jq . | sed -e "s/.\{100\}/&\n/g" > ${PATH_LEVEL_4}/password_raw.txt
-awk -v new_word=" password:${PASSWORD5}" 'NR==512 {gsub(substr($0, 10, length($0)-9), new_word)} {print}' ${PATH_LEVEL_4}/password_raw.txt > ${PATH_LEVEL_4}/password.txt
-rm ${PATH_LEVEL_4}/password_raw.txt
+awk -v new_word=" password:${PASSWORD5}" 'NR==512 {gsub(substr($0, 10, length($0)-9), new_word)} {print}' ${SCRIPT_ROOT}/lipsum.txt > ${PATH_LEVEL_4}/password.txt
 echo "The password is somewhere in the file. It is prefixed "password:"." > ${PATH_LEVEL_4}/README.txt
 echo "" >> ${PATH_LEVEL_4}/README.txt
 echo "You may use one, some or all of these tools:" >> ${PATH_LEVEL_4}/README.txt
@@ -186,7 +173,11 @@ echo "" >> ${PATH_LEVEL_13}/README.txt
 echo "You may use one, some or all of these tools:" >> ${PATH_LEVEL_13}/README.txt
 echo "" >> ${PATH_LEVEL_13}/README.txt
 echo "wget, curl, grep, less" >> ${PATH_LEVEL_13}/README.txt
-PASSWORD14="09:45:11"
+PASSWORD14=$(wget --quiet -O- https://ftp.ncbi.nlm.nih.gov/ReferenceSamples/giab/current.tree | grep "AshkenazimTrio.*vcf.gz\s" | grep "HG002" | grep "VariationHunter" | cut -f4 | cut -d' ' -f4)
+if [ -z "${PASSWORD14}" ]; then
+    echo "Error: PASSWORD14 is empty. It should be in the format hh:mm:ss. Something went wrong."
+    exit 1
+fi
 
 # Level 15
 cp ${PATH_LEVEL_6}/password.tsv ${PATH_LEVEL_14}/password.tsv
@@ -203,7 +194,7 @@ echo "" >> ${PATH_LEVEL_15}/README.txt
 echo "Hint: Most occuring word means all words (not lines) need to be counted and the word that has the highest count is the password. Ignore puncutation marks, spaces or newlines within the ranking (if any)." >> ${PATH_LEVEL_15}/README.txt
 echo "" >> ${PATH_LEVEL_15}/README.txt
 echo "You may use a combination of tools you have already used in the levels before." >> ${PATH_LEVEL_15}/README.txt
-PASSWORD_END_BOSS="et"
+PASSWORD_END_BOSS=$(zcat ${PATH_LEVEL_15}/.password.txt.gz | tr -c '[:alnum:]' '[\n*]' | grep . | sort | uniq -c | sort -nr | awk 'NR==1 {print $2}')
 
 # END BOSS
 touch ${PATH_END_BOSS}/congrats.txt
