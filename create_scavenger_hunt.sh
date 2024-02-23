@@ -38,7 +38,11 @@ echo "less, head, tail" >> ${PATH_LEVEL_3}/README.txt
 
 # Level 5
 PASSWORD5="needle"
-awk -v new_word=" password:${PASSWORD5}" 'NR==512 {gsub(substr($0, 10, length($0)-9), new_word)} {print}' ${SCRIPT_ROOT}/lipsum.txt > ${PATH_LEVEL_4}/password.txt
+curl -sS --fail https://lipsum.com/feed/json -d "amount=150" -d "what=paras" -d "start=true" \
+    | jq --raw-output .feed.lipsum \
+    | fold -s -w80 \
+    | awk -v new_word=" password:${PASSWORD5} " 'NR==512 {gsub(substr($0, 10, 16), new_word)} {print}' \
+    > ${PATH_LEVEL_4}/password.txt
 echo "The password is somewhere in the file. It is prefixed "password:"." > ${PATH_LEVEL_4}/README.txt
 echo "" >> ${PATH_LEVEL_4}/README.txt
 echo "You may use one, some or all of these tools:" >> ${PATH_LEVEL_4}/README.txt
