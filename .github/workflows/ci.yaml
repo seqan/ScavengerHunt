@@ -1,0 +1,50 @@
+# SPDX-FileCopyrightText: 2006-2024 Knut Reinert & Freie Universität Berlin
+# SPDX-FileCopyrightText: 2016-2024 Knut Reinert & MPI für molekulare Genetik
+# SPDX-License-Identifier: CC0-1.0
+
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+env:
+  TZ: Europe/Berlin
+
+defaults:
+  run:
+    shell: bash -Eeuo pipefail {0}
+
+jobs:
+  build:
+    name: "Scavenger Hunt"
+    runs-on: ubuntu-22.04
+    timeout-minutes: 120
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Tool Versions
+        run: |
+          set -x +eu
+          echo $LANG
+          echo $LC_ALL
+          bash --version
+          awk -W version
+          diff --version
+          comm --version
+          sed --version
+          sort --version
+          uniq --version
+          wget --version
+          curl --version
+          grep --version
+          zip --version
+
+      - name: Create Scavenger Hunt
+        run: ./create_scavenger_hunt.sh
+
+      - name: Solve Scavenger Hunt
+        run: ./test.sh
+
