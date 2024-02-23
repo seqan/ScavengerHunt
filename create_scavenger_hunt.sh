@@ -1,11 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
-PATH_LEVEL_0="start"
-for i in $(seq 1 1 15); do
-    eval "PATH_LEVEL_${i}=\${PATH_LEVEL_$((i-1))}/level${i}";
-done
-PATH_END_BOSS="${PATH_LEVEL_15}/end_boss"
+SCRIPT_ROOT=$(dirname $(readlink -f $0))
+source ${SCRIPT_ROOT}/paths.sh
 
 mkdir -p ${PATH_END_BOSS}
 
@@ -41,7 +38,18 @@ echo "less, head, tail" >> ${PATH_LEVEL_3}/README.txt
 
 # Level 5
 PASSWORD5="needle"
-curl -s -X POST https://lipsum.com/feed/json -d "amount=3000" | sed -e "s/.\{100\}/&\n/g" > ${PATH_LEVEL_4}/password_raw.txt
+retry_command ()
+{
+    for i in 1 2 3 4 5; do
+        if [[ $i -eq 5 ]]; then
+            "$@"
+        else
+            "$@" && break || sleep $((i * 5))
+        fi
+    done
+}
+# The jq will reformat the json a bit, but its main purpose is to check that curl returned valid json (no server error).
+retry_command curl -s -X POST https://lipsum.com/feed/json -d "amount=3000" | jq . | sed -e "s/.\{100\}/&\n/g" > ${PATH_LEVEL_4}/password_raw.txt
 awk -v new_word=" password:${PASSWORD5}" 'NR==512 {gsub(substr($0, 10, length($0)-9), new_word)} {print}' ${PATH_LEVEL_4}/password_raw.txt > ${PATH_LEVEL_4}/password.txt
 rm ${PATH_LEVEL_4}/password_raw.txt
 echo "The password is somewhere in the file. It is prefixed "password:"." > ${PATH_LEVEL_4}/README.txt
@@ -145,7 +153,7 @@ echo "sort, uniq" >> ${PATH_LEVEL_10}/README.txt
 # Level 12
 PASSWORD12="moly"
 cat ${PATH_LEVEL_4}/password.txt | tr '\s' '\n' | awk 'NR==300 {$0="holy"} {print}' > ${PATH_LEVEL_11}/password_A.txt
-cat ${PATH_LEVEL_4}/password.txt | tr '\s' '\n' | awk -v word="${PASSWORD12}" 'NR==300 {$0="word"} {print}' > ${PATH_LEVEL_11}/password_B.txt
+cat ${PATH_LEVEL_4}/password.txt | tr '\s' '\n' | awk -v word="${PASSWORD12}" 'NR==300{$0=word}1' > ${PATH_LEVEL_11}/password_B.txt
 
 echo "The password is the one word that is ONLY present in file password_B.txt but not in password_A.txt." > ${PATH_LEVEL_11}/README.txt
 echo "" >> ${PATH_LEVEL_11}/README.txt
