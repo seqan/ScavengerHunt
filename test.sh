@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -euo pipefail
 
 SCRIPT_ROOT=$(dirname $(readlink -f $0))

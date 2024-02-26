@@ -1,4 +1,3 @@
-#!/bin/bash
 set -u
 
 if [ "$0" = "$BASH_SOURCE" ]; then
