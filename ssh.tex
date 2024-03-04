@@ -1,0 +1,122 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry} % Reduced margin
+
+\title{Getting Started with SSH}
+\date{}
+
+\setlength{\parindent}{0pt}
+
+\begin{document}
+	
+	\maketitle
+	
+	\section{Introduction}
+	SSH (Secure Shell) is a cryptographic network protocol for operating network services securely over an unsecured network. It provides a secure channel over an unsecured network by encrypting the communication between the client and server. 
+	
+	\section{Zedat Account}
+	
+	You need a Zedat account. To make sure it is registered/activated, please login once into \verb|https://portal.mi.fu-berlin.de|. You may need to wait up to an hour.
+	
+	\section{Installing SSH Client}
+	
+	\begin{description}
+		\item[Linux:] ssh should be installed. Otherwise do: \begin{verbatim}
+			sudo apt-get install openssh-client
+		\end{verbatim}
+		\item[Mac:] ssh should be installed
+		\item[Windows: ] Install WSL (WIndows Subsystem for Linux). ssh should then be available
+	\end{description}
+	
+	\section{Set up you ssh config file}
+	
+	In your terminal, type:
+	\begin{verbatim}
+		nano ~/.ssh/config
+	\end{verbatim}
+
+	This will open a file. Now copy the following into this file and change \verb|<USER>| with you Zedat username.
+	
+	\begin{verbatim}
+Host andorra
+Hostname andorra.imp.fu-berlin.de
+User <USER>
+
+# The following proxy jumps over andorra and letts you access
+# all compute servers and cudo servers
+# e.g. ssh compute01
+Host compute?? cuda??
+HostName %h.imp.fu-berlin.de
+ProxyJump andorra
+User <USER>
+
+	\end{verbatim}
+	
+	Save and Exit \verb|nano|.
+	
+	\section{Connect to the FU server}
+	
+	Now that you have your config set up. Type:
+	
+	\begin{verbatim}
+		ssh compute01
+	\end{verbatim}
+	
+	If you're connecting for the first time, you may see a message asking you to verify the authenticity of the host. Type \texttt{yes} to continue connecting.
+	
+	You are also asked for your Zedat password. Maybe even multiple times.
+	
+	\section{Connect to the servers with an ssh key pair}
+	
+	With the above there are two issues:
+	
+	\begin{enumerate}
+		\item You always have to type in your password (thats a waste of time)
+		\item You \textbf{cannot login if you are not connected to eduroam}.	
+	\end{enumerate}
+	
+	To overcome these issues, we need to generate a ssh key pair.
+	
+	\subsection{Check if you already have an ssh key pair}
+	
+	Type the following in your terminal:
+	
+	\begin{verbatim}
+		ls ~/.ssh
+	\end{verbatim}
+	
+	It should print at least the config file we created. And might show this:
+	
+	\begin{verbatim}
+		 config   id_rsa  id_rsa.pub
+	\end{verbatim}
+	
+	If you see a file that ends with \verb|.pub| you already have and ssh and you can reuse it.
+	
+	\textbf{If you already have an ssh key SKIP 6.2!}
+	
+	\subsection{Create an ssh key}
+	
+	Type into you terminal:
+	
+	\begin{verbatim}
+		ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
+	\end{verbatim}
+	
+	If you are asked for a pass phrase, just press Enter (we recommend not setting a password).
+	
+	\subsection{Copy the ssh-key to the server}
+	
+	Type into you terminal:
+	
+	\begin{verbatim}
+		ssh-copy-id andorra
+	\end{verbatim}
+
+	Type in your zedat password if asked for.
+	
+	\section{Done}
+	
+	You should now be able to login to the servers from everywhere without adding your password everytime.
+\end{document}
+
