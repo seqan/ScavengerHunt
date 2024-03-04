@@ -47,7 +47,7 @@ curl -sS --fail https://lipsum.com/feed/json -d "amount=150" -d "what=paras" -d 
     | fold -s -w80 \
     | awk -v new_word=" password:${PASSWORD5} " 'NR==512 {gsub(substr($0, 10, 16), new_word)} {print}' \
     > ${PATH_LEVEL_4}/password.txt
-echo "The password is somewhere in the file. It is prefixed "password:"." > ${PATH_LEVEL_4}/README.txt
+echo "The password is somewhere in the file. It is prefixed 'password:'" > ${PATH_LEVEL_4}/README.txt
 echo "" >> ${PATH_LEVEL_4}/README.txt
 echo "You may use one, some or all of these tools:" >> ${PATH_LEVEL_4}/README.txt
 echo "" >> ${PATH_LEVEL_4}/README.txt
