@@ -94,4 +94,6 @@ echo "The password for end_boss.zip is \"${PASSWORD_END_BOSS}\""
 unzip -q -P "${PASSWORD_END_BOSS}" end_boss.zip
 cd ${PATH_END_BOSS}
 
-test -f congrats.txt
+test -s congrats.txt
+
+cat congrats.txt
