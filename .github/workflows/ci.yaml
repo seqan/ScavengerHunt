@@ -8,6 +8,8 @@ on:
   push:
   pull_request:
   workflow_dispatch:
+  schedule:
+    - cron: "0 4 * * TUE"
 
 env:
   TZ: Europe/Berlin
@@ -19,7 +21,8 @@ defaults:
 jobs:
   license_check:
     name: "REUSE Compliance"
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
+    if: github.repository_owner == 'seqan' || github.event_name == 'workflow_dispatch'
     timeout-minutes: 5
     steps:
       - name: Checkout
@@ -31,7 +34,8 @@ jobs:
   build:
     name: "Scavenger Hunt"
     needs: [license_check]
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
+    if: github.repository_owner == 'seqan' || github.event_name == 'workflow_dispatch'
     timeout-minutes: 10
     steps:
       - name: Checkout
