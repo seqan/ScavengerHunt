@@ -150,7 +150,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: double-zipped-start
-          path: website/static/start.zip
+          path: website/static
 
       - name: Build
         working-directory: website
