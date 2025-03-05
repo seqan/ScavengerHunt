@@ -6,10 +6,16 @@ name: CI
 
 on:
   push:
-  pull_request:
+    branches:
+      - 'main'
+  pull_request_target:
   workflow_dispatch:
   schedule:
     - cron: "0 4 * * TUE"
+
+concurrency:
+  group: ci
+  cancel-in-progress: ${{ github.event_name != 'push' }}
 
 env:
   TZ: Europe/Berlin
@@ -20,26 +26,48 @@ defaults:
 
 jobs:
   license_check:
-    name: "REUSE Compliance"
+    name: REUSE Compliance
     runs-on: ubuntu-latest
     if: github.repository_owner == 'seqan' || github.event_name == 'workflow_dispatch'
     timeout-minutes: 5
     steps:
       - name: Checkout
+        if: github.event_name != 'pull_request_target'
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      # pull_request_target does not checkout the merge commit by default
+      - name: Checkout
+        if: github.event_name == 'pull_request_target'
+        uses: actions/checkout@v4
+        with:
+          ref: "refs/pull/${{ github.event.number }}/merge"
+          submodules: recursive
 
       - name: REUSE Compliance Check
         uses: fsfe/reuse-action@v5
 
   build:
-    name: "Scavenger Hunt"
+    name: Scavenger Hunt
     needs: [license_check]
     runs-on: ubuntu-latest
     if: github.repository_owner == 'seqan' || github.event_name == 'workflow_dispatch'
     timeout-minutes: 10
     steps:
       - name: Checkout
+        if: github.event_name != 'pull_request_target'
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      # pull_request_target does not checkout the merge commit by default
+      - name: Checkout
+        if: github.event_name == 'pull_request_target'
+        uses: actions/checkout@v4
+        with:
+          ref: "refs/pull/${{ github.event.number }}/merge"
+          submodules: recursive
 
       - name: Tool Versions
         run: |
@@ -86,3 +114,90 @@ jobs:
         with:
           name: double-zipped-start
           path: start.zip
+
+  deploy:
+    name: Deploy Website
+    needs: [build]
+    runs-on: ubuntu-latest
+    if: github.repository_owner == 'seqan' || github.event_name == 'workflow_dispatch'
+    timeout-minutes: 10
+    steps:
+      - name: Get latest Hugo version
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: echo "HUGO_VERSION=$(gh api /repos/gohugoio/hugo/releases/latest -q .tag_name)" >> "${GITHUB_ENV}"
+
+      - name: Install Hugo CLI
+        run: |
+          wget --quiet --retry-connrefused --output-document "${{ runner.temp }}/hugo.deb" "https://github.com/gohugoio/hugo/releases/download/${HUGO_VERSION}/hugo_extended_${HUGO_VERSION:1}_linux-amd64.deb"
+          sudo dpkg -i "${{ runner.temp }}/hugo.deb"
+
+      - name: Checkout
+        if: github.event_name != 'pull_request_target'
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      # pull_request_target does not checkout the merge commit by default
+      - name: Checkout
+        if: github.event_name == 'pull_request_target'
+        uses: actions/checkout@v4
+        with:
+          ref: "refs/pull/${{ github.event.number }}/merge"
+          submodules: recursive
+
+      - name: Download Scavenger Hunt
+        uses: actions/download-artifact@v4
+        with:
+          name: double-zipped-start
+          path: website/static/start.zip
+
+      - name: Build
+        working-directory: website
+        env:
+          HUGO_ENVIRONMENT: production
+        run: |
+          hugo --minify \
+               --baseURL "https://docs.seqan.de/swp" \
+               --destination "${GITHUB_WORKSPACE}/build"
+
+      - name: Upload Website
+        if: github.repository_owner != 'seqan' && github.event_name != 'pull_request_target'
+        uses: actions/upload-artifact@v4
+        with:
+          name: website
+          path: build
+
+      - name: Deploy Preview
+        if: github.repository_owner == 'seqan' && github.event_name == 'pull_request_target'
+        uses: seqan/actions/documentation_deploy_preview@main
+        with:
+          deploy_host: ${{ secrets.DEPLOY_HOST }}
+          deploy_user: ${{ secrets.DEPLOY_USER }}
+          deploy_ssh_key: ${{ secrets.DEPLOY_SSH_KEY }}
+          deploy_base_path: ${{ secrets.DEPLOY_PREVIEW_BASE_PATH }}
+          source_path_user_doc: build
+          token: ${{ secrets.SEQAN_ACTIONS_PAT }}
+
+      - name: Deploy Website
+        if: github.repository_owner == 'seqan' && github.event_name != 'pull_request_target'
+        uses: seqan/actions/documentation_deploy_production@main
+        with:
+          deploy_host: ${{ secrets.DEPLOY_HOST }}
+          deploy_user: ${{ secrets.DEPLOY_USER }}
+          deploy_ssh_key: ${{ secrets.DEPLOY_SSH_KEY }}
+          source_path_user_doc: build/
+          deploy_path_user_doc: ${{ secrets.DEPLOY_PRODUCTION_BASE_PATH }}
+
+  delete:
+      name: Delete Preview
+      runs-on: ubuntu-latest
+      if: github.repository_owner == 'seqan' && github.event_name == 'pull_request_target' && github.event.action == 'closed'
+      steps:
+      - name: Delete Preview
+        uses: seqan/actions/documentation_delete_preview@main
+        with:
+          deploy_host: ${{ secrets.DEPLOY_HOST }}
+          deploy_user: ${{ secrets.DEPLOY_USER }}
+          deploy_ssh_key: ${{ secrets.DEPLOY_SSH_KEY }}
+          deploy_base_path: ${{ secrets.DEPLOY_PREVIEW_BASE_PATH }}
