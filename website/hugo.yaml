@@ -1,0 +1,26 @@
+baseURL: https://example.org/
+languageCode: en-us
+title: SWP 25 SeqAn
+copyright: © [SeqAn](https://www.seqan.de)
+theme: PaperMod
+enableEmoji: true
+mainsections:
+  - posts
+  - bash
+  - ssh
+pygmentsUseClasses: true
+markup:
+  highlight:
+    style: github-dark
+    noClasses: false
+  tableOfContents:
+    startLevel: 1
+    endLevel: 2
+params:
+  defaultTheme: dark
+  ShowCodeCopyButtons: true
+  ShowToc: true
+  UseHugoToc: true
+  homeInfoParams:
+    Title: List of topics
+    Content:
