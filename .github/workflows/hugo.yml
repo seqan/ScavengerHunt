@@ -76,3 +76,16 @@ jobs:
           deploy_ssh_key: ${{ secrets.DEPLOY_SSH_KEY }}
           source_path_user_doc: build/
           deploy_path_user_doc: ${{ secrets.DEPLOY_PRODUCTION_BASE_PATH }}
+
+  delete:
+      name: Delete Preview
+      runs-on: ubuntu-latest
+      if: github.repository_owner == 'seqan' && github.event_name == 'pull_request_target' && github.event.action == 'closed'
+      steps:
+      - name: Delete Preview
+        uses: seqan/actions/documentation_delete_preview@main
+        with:
+          deploy_host: ${{ secrets.DEPLOY_HOST }}
+          deploy_user: ${{ secrets.DEPLOY_USER }}
+          deploy_ssh_key: ${{ secrets.DEPLOY_SSH_KEY }}
+          deploy_base_path: ${{ secrets.DEPLOY_PREVIEW_BASE_PATH }}
