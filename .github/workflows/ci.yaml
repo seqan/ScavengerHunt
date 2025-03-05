@@ -72,41 +72,41 @@ jobs:
       - name: Tool Versions
         run: |
           set +eu
-          echo "LANG=$LANG"
-          echo "##############################################################################"
-          echo "LC_ALL=$LC_ALL"
-          echo "##############################################################################"
-          bash --version
-          echo "##############################################################################"
-          awk -W version
-          echo "##############################################################################"
-          diff --version
-          echo "##############################################################################"
-          comm --version
-          echo "##############################################################################"
-          sed --version
-          echo "##############################################################################"
-          sort --version
-          echo "##############################################################################"
-          uniq --version
-          echo "##############################################################################"
-          wget --version
-          echo "##############################################################################"
-          curl --version
-          echo "##############################################################################"
-          grep --version
-          echo "##############################################################################"
-          zip -v
-          echo "##############################################################################"
-          unzip -v
-          echo "##############################################################################"
-          jq --version
+          echo "LANG=$LANG" |& tee -a log.txt
+          echo "##############################################################################" |& tee -a log.txt
+          echo "LC_ALL=$LC_ALL" |& tee -a log.txt
+          echo "##############################################################################" |& tee -a log.txt
+          bash --version |& tee -a log.txt
+          echo "##############################################################################" |& tee -a log.txt
+          awk -W version |& tee -a log.txt
+          echo "##############################################################################" |& tee -a log.txt
+          diff --version |& tee -a log.txt
+          echo "##############################################################################" |& tee -a log.txt
+          comm --version |& tee -a log.txt
+          echo "##############################################################################" |& tee -a log.txt
+          sed --version |& tee -a log.txt
+          echo "##############################################################################" |& tee -a log.txt
+          sort --version |& tee -a log.txt
+          echo "##############################################################################" |& tee -a log.txt
+          uniq --version |& tee -a log.txt
+          echo "##############################################################################" |& tee -a log.txt
+          wget --version |& tee -a log.txt
+          echo "##############################################################################" |& tee -a log.txt
+          curl --version |& tee -a log.txt
+          echo "##############################################################################" |& tee -a log.txt
+          grep --version |& tee -a log.txt
+          echo "##############################################################################" |& tee -a log.txt
+          zip -v |& tee -a log.txt
+          echo "##############################################################################" |& tee -a log.txt
+          unzip -v |& tee -a log.txt
+          echo "##############################################################################" |& tee -a log.txt
+          jq --version |& tee -a log.txt
 
       - name: Create Scavenger Hunt
         run: ./create_scavenger_hunt.sh
 
       - name: Solve Scavenger Hunt
-        run: ./test.sh
+        run: ./test.sh |& tee -a log.txt
 
       - name: Upload Artifact
         if: always()
@@ -114,6 +114,13 @@ jobs:
         with:
           name: double-zipped-start
           path: start.zip
+
+      - name: Upload Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: solution
+          path: log.txt
 
   deploy:
     name: Deploy Website
@@ -152,11 +159,18 @@ jobs:
           name: double-zipped-start
           path: website/static
 
+      - name: Download Solution
+        uses: actions/download-artifact@v4
+        with:
+          name: solution
+          path: website/static
+
       - name: Build
         working-directory: website
         env:
           HUGO_ENVIRONMENT: production
         run: |
+          chmod o-r static/log.txt
           hugo --minify \
                --baseURL "https://docs.seqan.de/swp" \
                --destination "${GITHUB_WORKSPACE}/build"
