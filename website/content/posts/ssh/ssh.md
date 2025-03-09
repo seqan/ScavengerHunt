@@ -43,7 +43,6 @@ Now copy the following into this file and replace <USER> with your ZEDAT usernam
 Host sanmarino andorra
     Hostname %h.imp.fu-berlin.de
     User <USER>
-    IdentityFile ...
 
 Host compute?? cuda??
     HostName %h.imp.fu-berlin.de
@@ -84,7 +83,7 @@ It should print at least the config file we created, and might show this:
 config id_rsa id_rsa.pub
 ```
 If you see a file that ends with .pub, you already have an ssh key that you can reuse.\
-**If you already have an ssh key, SKIP 6.2!**
+**If you already have an ssh key, the next step!**
 
 ### Creating an ssh key
 
@@ -105,3 +104,8 @@ ssh-copy-id andorra
 Type in your ZEDAT password if requested to do so.
 
 You should now be able to log in to the servers from everywhere without entering your password every time.
+
+If you are using an already exsting ssh key and it is not used by default, you need to extend the `~/.ssh/config`:
+```
+    IdentityFile <file_to_exting_ssh_key>
+```
