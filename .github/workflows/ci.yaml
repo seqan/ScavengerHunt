@@ -132,7 +132,9 @@ jobs:
       - name: Get latest Hugo version
         env:
           GH_TOKEN: ${{ github.token }}
-        run: echo "HUGO_VERSION=$(gh api /repos/gohugoio/hugo/releases/latest -q .tag_name)" >> "${GITHUB_ENV}"
+        run: |
+          echo "HUGO_VERSION=$(gh api /repos/gohugoio/hugo/releases/latest -q .tag_name)" >> "${GITHUB_ENV}"
+          echo "HUGO_VERSION=v0.145.0" >> "${GITHUB_ENV}" # TODO: Wait for website/themes submodule to be updated
 
       - name: Install Hugo CLI
         run: |
