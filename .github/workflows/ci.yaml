@@ -46,7 +46,7 @@ jobs:
           submodules: recursive
 
       - name: REUSE Compliance Check
-        uses: fsfe/reuse-action@v5
+        uses: fsfe/reuse-action@v6
 
   build:
     name: Scavenger Hunt
