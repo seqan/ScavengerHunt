@@ -156,13 +156,13 @@ jobs:
           submodules: recursive
 
       - name: Download Scavenger Hunt
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: double-zipped-start
           path: website/static
 
       - name: Download Solution
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: solution
           path: website/static
