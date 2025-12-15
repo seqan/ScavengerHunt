@@ -110,14 +110,14 @@ jobs:
 
       - name: Upload Artifact
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: double-zipped-start
           path: start.zip
 
       - name: Upload Artifact
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: solution
           path: log.txt
@@ -179,7 +179,7 @@ jobs:
 
       - name: Upload Website
         if: github.repository_owner != 'seqan' && github.event_name != 'pull_request_target'
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: website
           path: build
