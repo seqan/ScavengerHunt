@@ -44,6 +44,7 @@ jobs:
         with:
           ref: "refs/pull/${{ github.event.number }}/merge"
           submodules: recursive
+          allow-unsafe-pr-checkout: true
 
       - name: REUSE Compliance Check
         uses: fsfe/reuse-action@v6
@@ -68,6 +69,7 @@ jobs:
         with:
           ref: "refs/pull/${{ github.event.number }}/merge"
           submodules: recursive
+          allow-unsafe-pr-checkout: true
 
       - name: Tool Versions
         run: |
@@ -154,6 +156,7 @@ jobs:
         with:
           ref: "refs/pull/${{ github.event.number }}/merge"
           submodules: recursive
+          allow-unsafe-pr-checkout: true
 
       - name: Download Scavenger Hunt
         uses: actions/download-artifact@v8
